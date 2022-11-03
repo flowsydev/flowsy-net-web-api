@@ -1,0 +1,67 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <Title>Flowsy Web API</Title>
+        <Description>Foundation components for Web APIs.</Description>
+
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/flowsydev/flowsy-net-web-api</RepositoryUrl>
+
+        <PackageVersion>1.0.0</PackageVersion>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+
+        <NoWarn>$(NoWarn);NU5118;NU5128</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="../README.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Flowsy.Core" Version="1.1.1" />
+        <PackageReference Include="Flowsy.Localization" Version="2.0.0" />
+        <PackageReference Include="Flowsy.Mediation" Version="1.1.1" />
+        <PackageReference Include="FluentValidation.AspNetCore" Version="11.2.2" />
+        <PackageReference Include="Hellang.Middleware.ProblemDetails" Version="6.5.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
+        <PackageReference Include="Serilog.AspNetCore" Version="6.0.1" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="7.0.5" />
+        <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.4.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.4.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.4.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="Resources\Shared.en-us.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Shared.en-us.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Shared.es-mx.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Shared.es-mx.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Resources\Shared.en-us.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Shared.en-us.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Shared.es-mx.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Shared.es-mx.resx</DependentUpon>
+      </Compile>
+    </ItemGroup>
+</Project>

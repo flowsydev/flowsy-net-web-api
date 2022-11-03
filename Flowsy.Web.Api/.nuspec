@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <frameworkReferences>
+            <group targetFramework="net6.0">
+                <frameworkReference name="Microsoft.AspNetCore.App" />
+            </group>
+        </frameworkReferences>
+        
+        <dependencies>
+            <dependency id="Flowsy.Core" version="1.1.1" />
+            <dependency id="Flowsy.Localization" version="2.0.0" />
+            <dependency id="Flowsy.Mediation" version="1.1.1" />
+            <dependency id="FluentValidation.AspNetCore" version="11.2.2" />
+            <dependency id="Hellang.Middleware.ProblemDetails" version="6.5.1" />
+            <dependency id="Microsoft.AspNetCore.Mvc.versioning" version="5.0.0" />
+            <dependency id="Serilog.AspNetCore" version="6.0.1" />
+            <dependency id="Swashbuckle.AspNetCore" version="6.4.0" />
+            <dependency id="Swashbuckle.AspNetCore.Filters" version="7.0.5" />
+            <dependency id="Swashbuckle.AspNetCore.Swagger" version="6.4.0" />
+            <dependency id="Swashbuckle.AspNetCore.SwaggerGen" version="6.4.0" />
+            <dependency id="Swashbuckle.AspNetCore.SwaggerUI" version="6.4.0" />
+        </dependencies>
+    </metadata>
+    <!-- Optional 'files' node -->
+</package>
