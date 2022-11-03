@@ -10,7 +10,7 @@
         <dependencies>
             <dependency id="Flowsy.Core" version="1.1.1" />
             <dependency id="Flowsy.Localization" version="2.0.0" />
-            <dependency id="Flowsy.Mediation" version="1.1.1" />
+            <dependency id="Flowsy.Mediation" version="2.0.0" />
             <dependency id="FluentValidation.AspNetCore" version="11.2.2" />
             <dependency id="Hellang.Middleware.ProblemDetails" version="6.5.1" />
             <dependency id="Microsoft.AspNetCore.Mvc.versioning" version="5.0.0" />
