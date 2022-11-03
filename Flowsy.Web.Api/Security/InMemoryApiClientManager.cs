@@ -3,7 +3,7 @@ using Flowsy.Localization;
 
 namespace Flowsy.Web.Api.Security;
 
-public class InMemoryApiClientManager
+public class InMemoryApiClientManager : IApiClientManager
 {
     private readonly IDictionary<string, ApiClient> _clients;
 
