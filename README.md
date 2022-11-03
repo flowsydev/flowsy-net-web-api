@@ -59,6 +59,9 @@ using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 var myApiAssembly = Assembly.GetExecutingAssembly();
 
+// Load default culture from configuration
+CultureInfo.CurrentUICulture = new CultureInfo("en-US");
+
 // Add logging
 builder.Host.UseSerilog((_, loggerConfiguration) =>
     {
