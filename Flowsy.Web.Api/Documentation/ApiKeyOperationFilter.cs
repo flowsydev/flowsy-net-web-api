@@ -1,5 +1,6 @@
 using Flowsy.Web.Api.Parameters;
 using Flowsy.Web.Api.Security;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -10,15 +11,18 @@ namespace Flowsy.Web.Api.Documentation;
 /// </summary>
 public class ApiKeyOperationFilter : IOperationFilter
 {
-    private readonly IApiClientManager _apiClientManager;
+    private readonly IApiClientManager? _apiClientManager;
     
-    public ApiKeyOperationFilter(IApiClientManager apiClientManager)
+    public ApiKeyOperationFilter(IServiceProvider serviceProvider)
     {
-        _apiClientManager = apiClientManager;
+        _apiClientManager = serviceProvider.GetService<IApiClientManager>();
     }
     
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
+        if (_apiClientManager is null)
+            return;
+        
         foreach (var clientId in _apiClientManager.ClientIds)
         {
             operation.Parameters.Add(new OpenApiParameter
