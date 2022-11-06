@@ -1,3 +1,5 @@
+using Flowsy.Content;
+
 namespace Flowsy.Web.Api.Forms;
 
 /// <summary>
@@ -5,7 +7,7 @@ namespace Flowsy.Web.Api.Forms;
 /// </summary>
 public class MultipartFile : IDisposable, IAsyncDisposable
 {
-    public MultipartFile(string key, string fileName, Stream stream, FileContentDescriptor contentDescriptor)
+    public MultipartFile(string key, string fileName, Stream stream, ContentDescriptor? contentDescriptor)
     {
         Key = key;
         FileName = fileName;
@@ -38,7 +40,7 @@ public class MultipartFile : IDisposable, IAsyncDisposable
     /// <summary>
     /// The file content descriptor.
     /// </summary>
-    public FileContentDescriptor ContentDescriptor { get; }
+    public ContentDescriptor? ContentDescriptor { get; }
 
     public void Dispose()
     {

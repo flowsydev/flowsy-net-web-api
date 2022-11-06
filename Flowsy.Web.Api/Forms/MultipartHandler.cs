@@ -1,4 +1,5 @@
 using System.Text;
+using Flowsy.Content;
 using Flowsy.Localization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
@@ -11,13 +12,13 @@ namespace Flowsy.Web.Api.Forms;
 /// </summary>
 public class MultipartHandler : IMultipartHandler
 {
-    private readonly IContentInspector _contentInspector;
+    private readonly IContentInspector? _contentInspector;
     private readonly IEnumerable<string> _allowedMimeTypes;
 
-    public MultipartHandler(IContentInspector contentInspector, IEnumerable<string> allowedMimeTypes)
+    public MultipartHandler(IContentInspector? contentInspector, IEnumerable<string>? allowedMimeTypes)
     {
         _contentInspector = contentInspector;
-        _allowedMimeTypes = allowedMimeTypes;
+        _allowedMimeTypes = allowedMimeTypes ?? Array.Empty<string>();
     }
 
     /// <summary>
@@ -68,12 +69,16 @@ public class MultipartHandler : IMultipartHandler
                 var stream = new MemoryStream();
                 await section.Body.CopyToAsync(stream, cancellationToken);
                 stream.Seek(0, SeekOrigin.Begin);
-                
-                var contentDescriptor = _contentInspector.InspectFile(stream);
-                if (string.IsNullOrEmpty(contentDescriptor.MimeType) || !_allowedMimeTypes.Contains(contentDescriptor.MimeType))
+
+                var contentDescriptor = _contentInspector?.Inspect(stream);
+                if (_allowedMimeTypes.Any() && contentDescriptor is not null)
                 {
-                    invalidFiles.Add(contentDisposition.FileName.Value);
-                    continue;
+                    var intersection = contentDescriptor.MimeTypes.Intersect(_allowedMimeTypes);
+                    if (intersection.Count() != contentDescriptor.MimeTypes.Count())
+                    {
+                        invalidFiles.Add(contentDisposition.FileName.Value);
+                        continue;
+                    }
                 }
 
                 files.Add(contentDisposition.Name.Value, new MultipartFile(
