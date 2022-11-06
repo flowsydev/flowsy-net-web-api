@@ -3,6 +3,7 @@ using Flowsy.Content;
 using Flowsy.Localization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 
 namespace Flowsy.Web.Api.Forms;
@@ -12,11 +13,17 @@ namespace Flowsy.Web.Api.Forms;
 /// </summary>
 public class MultipartHandler : IMultipartHandler
 {
+    private readonly FileBufferingOptions? _fileBufferingOptions;
     private readonly IContentInspector? _contentInspector;
     private readonly IEnumerable<string> _allowedMimeTypes;
 
-    public MultipartHandler(IContentInspector? contentInspector, IEnumerable<string>? allowedMimeTypes)
+    public MultipartHandler(
+        IOptions<FileBufferingOptions>? fileBufferingOptions,
+        IContentInspector? contentInspector,
+        IEnumerable<string>? allowedMimeTypes
+        )
     {
+        _fileBufferingOptions = fileBufferingOptions?.Value;
         _contentInspector = contentInspector;
         _allowedMimeTypes = allowedMimeTypes ?? Array.Empty<string>();
     }
@@ -66,7 +73,16 @@ public class MultipartHandler : IMultipartHandler
                 !string.IsNullOrEmpty(contentDisposition.FileName.Value)
             )
             {
-                var stream = new MemoryStream();
+                Stream stream = _fileBufferingOptions is not null
+                    ? new FileBufferingReadStream(
+                        section.Body,
+                        _fileBufferingOptions.MemoryThreshold,
+                        _fileBufferingOptions.BufferLimit,
+                        _fileBufferingOptions.TempFileDirectory,
+                        _fileBufferingOptions.BytePool
+                    )
+                    : new MemoryStream();
+                
                 await section.Body.CopyToAsync(stream, cancellationToken);
                 stream.Seek(0, SeekOrigin.Begin);
 
