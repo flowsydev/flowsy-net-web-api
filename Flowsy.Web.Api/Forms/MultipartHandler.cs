@@ -71,13 +71,21 @@ public class MultipartHandler : IMultipartHandler
                 stream.Seek(0, SeekOrigin.Begin);
 
                 var contentDescriptor = _contentInspector?.Inspect(stream);
-                if (_allowedMimeTypes.Any() && contentDescriptor is not null)
+                if (contentDescriptor is not null)
                 {
-                    var intersection = contentDescriptor.MimeTypes.Intersect(_allowedMimeTypes);
-                    if (intersection.Count() != contentDescriptor.MimeTypes.Count())
+                    contentDescriptor.Name = contentDisposition.FileName.Value;
+                    contentDescriptor.CreationDate = contentDisposition.CreationDate?.DateTime;
+                    contentDescriptor.ModificationDate = contentDisposition.ModificationDate?.DateTime;
+                    contentDescriptor.ReadDate = contentDisposition.ReadDate?.DateTime;
+                    
+                    if (_allowedMimeTypes.Any())
                     {
-                        invalidFiles.Add(contentDisposition.FileName.Value);
-                        continue;
+                        var intersection = contentDescriptor.MimeTypes.Intersect(_allowedMimeTypes);
+                        if (intersection.Count() != contentDescriptor.MimeTypes.Count())
+                        {
+                            invalidFiles.Add(contentDisposition.FileName.Value);
+                            continue;
+                        }
                     }
                 }
 
