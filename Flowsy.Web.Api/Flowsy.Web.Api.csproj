@@ -27,10 +27,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Flowsy.Content" Version="1.0.0" />
+        <PackageReference Include="Flowsy.Content" Version="1.0.1" />
         <PackageReference Include="Flowsy.Core" Version="1.1.1" />
         <PackageReference Include="Flowsy.Localization" Version="2.0.0" />
-        <PackageReference Include="Flowsy.Mediation" Version="2.0.0" />
+        <PackageReference Include="Flowsy.Mediation" Version="3.0.0" />
         <PackageReference Include="FluentValidation.AspNetCore" Version="11.2.2" />
         <PackageReference Include="Hellang.Middleware.ProblemDetails" Version="6.5.1" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
