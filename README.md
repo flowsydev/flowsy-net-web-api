@@ -10,6 +10,7 @@ This package gathers and extends the tools needed to create solid Web APIs by co
 * Data Validation
 * Mediator Pattern for Controllers
 * Form Content Management
+* Data Streaming
 * Logging
 * Problem Details
 * Swagger Documentation with Schema & Operation Filters
@@ -256,7 +257,61 @@ public class CustomerController : MediationController
 }
 ```
 
+## Data Streaming
+### 1. Configure File Buffering Options and Register a Streaming Provider
+```csharp
+// Program.cs
+// using ...
+using Flowsy.Web.Api.Streaming;
+// using ...
+
+var builder = WebApplication.CreateBuilder(args);
+// Add services
+builder.Services.Configure<FileBufferingOptions>(options =>
+    {
+        // Configure options:
+        // MemoryThreshold
+        // BufferLimit
+        // TempFileDirectory
+        // TempFileDirectoryAccessor
+        // BytePool
+    });
+builder.Services.AddSingleton<IStreamingProvider, StreamingProvider>()
+
+var app = builder.Build();
+// Use services
+app.Run();
+```
+### 2. Read or Write Streams Using a Streaming Provider
+```csharp
+// FileUploader.cs
+// using ...
+using Flowsy.Web.Api.Streaming;
+// using ...
+
+public class FileUploader
+{
+    private readonly IStreamingProvider _streamingProvider;
+    
+    public FileUploader(IStreamingProvider streamingProvider)
+    {
+        _streamingProvider = streamingProvider;
+    }
+    
+    public void UploadLargeFile(Stream inputStream)
+    {
+        using var bufferingStream = _streamingProvider.CreateFileBufferingReadStream(inputStream);
+        // Read content using bufferingStream 
+        // Make decisions based on the content
+        bufferingStream.Seek(0, SeekOrigin.Begin); // Rewind
+        // Read content again and store it somewhere
+    }
+}
+```
+
 ## Forms
+The following example shows how to read data from a multipart request.
+If an instance of IStreamingProvider is registered, the MultipartHandler service will use it to buffer content while reading request body sections.
 ```csharp
 using System.Threading;
 using Flowsy.Web.Api.Forms;
@@ -301,58 +356,6 @@ public class ExampleController : ControllerBase // Or MediationController
         return Ok(/* Some result */);
     }
 }
-```
-
-## Data Streaming
-### 1. Prepare File Buffering Options
-```csharp
-// Program.cs
-// using ...
-using Flowsy.Web.Api.Streaming;
-// using ...
-
-var builder = WebApplication.CreateBuilder(args);
-// Add services
-builder.Services.Configure<FileBufferingOptions>(options =>
-    {
-        // Configure options:
-        // MemoryThreshold
-        // BufferLimit
-        // TempFileDirectory
-        // TempFileDirectoryAccessor
-        // BytePool
-    });
-
-var app = builder.Build();
-// Use services
-app.Run();
-```
-### 2. Read or Write Streams Using a Streaming Provider
-```csharp
-// FileUploader.cs
-// using ...
-using Flowsy.Web.Api.Streaming;
-// using ...
-
-public class FileUploader
-{
-    private readonly IStreamingProvider _streamingProvider;
-    
-    public FileUploader(IStreamingProvider streamingProvider)
-    {
-        _streamingProvider = streamingProvider;
-    }
-    
-    public void UploadLargeFile(Stream inputStream)
-    {
-        using var bufferingStream = _streamingProvider.CreateFileBufferingReadStream(inputStream);
-        // Read content using bufferingStream 
-        // Make decisions based on the content
-        bufferingStream.Seek(0, SeekOrigin.Begin); // Rewind
-        // Read content again and store it somewhere
-    }
-}
-
 ```
 
 ## Security Extensions

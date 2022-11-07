@@ -13,12 +13,12 @@ namespace Flowsy.Web.Api.Forms;
 /// </summary>
 public class MultipartHandler : IMultipartHandler
 {
-    private readonly IStreamingProvider _streamingProvider;
+    private readonly IStreamingProvider? _streamingProvider;
     private readonly IContentInspector? _contentInspector;
     private readonly IEnumerable<string> _allowedMimeTypes;
 
     public MultipartHandler(
-        IStreamingProvider streamingProvider,
+        IStreamingProvider? streamingProvider,
         IContentInspector? contentInspector,
         IEnumerable<string>? allowedMimeTypes
         )
@@ -73,12 +73,19 @@ public class MultipartHandler : IMultipartHandler
                 !string.IsNullOrEmpty(contentDisposition.FileName.Value)
             )
             {
-                FileBufferingReadStream? fileBufferingStream = null;
+                Stream? stream = null;
                 try
                 {
-                    fileBufferingStream = _streamingProvider.CreateFileBufferingReadStream(section.Body);
+                    if (_streamingProvider is null)
+                    {
+                        stream = new MemoryStream();
+                        await section.Body.CopyToAsync(stream, cancellationToken);
+                        stream.Seek(0, SeekOrigin.Begin);
+                    }
+                    else
+                        stream = _streamingProvider.CreateFileBufferingReadStream(section.Body);
 
-                    var contentDescriptor = _contentInspector?.Inspect(fileBufferingStream);
+                    var contentDescriptor = _contentInspector?.Inspect(stream);
                     if (contentDescriptor is not null)
                     {
                         contentDescriptor.Name = contentDisposition.FileName.Value;
@@ -92,7 +99,7 @@ public class MultipartHandler : IMultipartHandler
                             if (intersection.Count() != contentDescriptor.MimeTypes.Count())
                             {
                                 invalidFiles.Add(contentDisposition.FileName.Value);
-                                fileBufferingStream.Dispose();
+                                stream.Dispose();
                                 continue;
                             }
                         }
@@ -100,14 +107,13 @@ public class MultipartHandler : IMultipartHandler
 
                     files.Add(contentDisposition.Name.Value, new MultipartFile(
                         contentDisposition.Name.Value,
-                        contentDisposition.FileName.Value,
-                        fileBufferingStream,
+                        stream,
                         contentDescriptor
                     ));
                 }
                 catch
                 {
-                    fileBufferingStream?.Dispose();
+                    stream?.Dispose();
                     throw;
                 }
             }

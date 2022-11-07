@@ -7,10 +7,9 @@ namespace Flowsy.Web.Api.Forms;
 /// </summary>
 public class MultipartFile : IDisposable, IAsyncDisposable
 {
-    public MultipartFile(string key, string fileName, Stream stream, ContentDescriptor? contentDescriptor)
+    public MultipartFile(string key, Stream stream, ContentDescriptor? contentDescriptor)
     {
         Key = key;
-        FileName = fileName;
         ContentDescriptor = contentDescriptor;
         Stream = stream;
     }
@@ -26,11 +25,6 @@ public class MultipartFile : IDisposable, IAsyncDisposable
     /// A string value to uniquely identify the file in the request.
     /// </summary>
     public string Key { get; }
-    
-    /// <summary>
-    /// The file name.
-    /// </summary>
-    public string FileName { get; }
     
     /// <summary>
     /// The file content as a stream.
