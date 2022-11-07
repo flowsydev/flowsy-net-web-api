@@ -1,9 +1,9 @@
 using System.Text;
 using Flowsy.Content;
 using Flowsy.Localization;
+using Flowsy.Web.Api.Streaming;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 
 namespace Flowsy.Web.Api.Forms;
@@ -13,17 +13,17 @@ namespace Flowsy.Web.Api.Forms;
 /// </summary>
 public class MultipartHandler : IMultipartHandler
 {
-    private readonly FileBufferingOptions? _fileBufferingOptions;
+    private readonly IStreamingProvider _streamingProvider;
     private readonly IContentInspector? _contentInspector;
     private readonly IEnumerable<string> _allowedMimeTypes;
 
     public MultipartHandler(
-        IOptions<FileBufferingOptions>? fileBufferingOptions,
+        IStreamingProvider streamingProvider,
         IContentInspector? contentInspector,
         IEnumerable<string>? allowedMimeTypes
         )
     {
-        _fileBufferingOptions = fileBufferingOptions?.Value;
+        _streamingProvider = streamingProvider;
         _contentInspector = contentInspector;
         _allowedMimeTypes = allowedMimeTypes ?? Array.Empty<string>();
     }
@@ -73,44 +73,43 @@ public class MultipartHandler : IMultipartHandler
                 !string.IsNullOrEmpty(contentDisposition.FileName.Value)
             )
             {
-                Stream stream = _fileBufferingOptions is not null
-                    ? new FileBufferingReadStream(
-                        section.Body,
-                        _fileBufferingOptions.MemoryThreshold,
-                        _fileBufferingOptions.BufferLimit,
-                        _fileBufferingOptions.TempFileDirectory,
-                        _fileBufferingOptions.BytePool
-                    )
-                    : new MemoryStream();
-                
-                await section.Body.CopyToAsync(stream, cancellationToken);
-                stream.Seek(0, SeekOrigin.Begin);
-
-                var contentDescriptor = _contentInspector?.Inspect(stream);
-                if (contentDescriptor is not null)
+                FileBufferingReadStream? fileBufferingStream = null;
+                try
                 {
-                    contentDescriptor.Name = contentDisposition.FileName.Value;
-                    contentDescriptor.CreationDate = contentDisposition.CreationDate?.DateTime;
-                    contentDescriptor.ModificationDate = contentDisposition.ModificationDate?.DateTime;
-                    contentDescriptor.ReadDate = contentDisposition.ReadDate?.DateTime;
-                    
-                    if (_allowedMimeTypes.Any())
+                    fileBufferingStream = _streamingProvider.CreateFileBufferingReadStream(section.Body);
+
+                    var contentDescriptor = _contentInspector?.Inspect(fileBufferingStream);
+                    if (contentDescriptor is not null)
                     {
-                        var intersection = contentDescriptor.MimeTypes.Intersect(_allowedMimeTypes);
-                        if (intersection.Count() != contentDescriptor.MimeTypes.Count())
+                        contentDescriptor.Name = contentDisposition.FileName.Value;
+                        contentDescriptor.CreationDate = contentDisposition.CreationDate?.DateTime;
+                        contentDescriptor.ModificationDate = contentDisposition.ModificationDate?.DateTime;
+                        contentDescriptor.ReadDate = contentDisposition.ReadDate?.DateTime;
+
+                        if (_allowedMimeTypes.Any())
                         {
-                            invalidFiles.Add(contentDisposition.FileName.Value);
-                            continue;
+                            var intersection = contentDescriptor.MimeTypes.Intersect(_allowedMimeTypes);
+                            if (intersection.Count() != contentDescriptor.MimeTypes.Count())
+                            {
+                                invalidFiles.Add(contentDisposition.FileName.Value);
+                                fileBufferingStream.Dispose();
+                                continue;
+                            }
                         }
                     }
-                }
 
-                files.Add(contentDisposition.Name.Value, new MultipartFile(
-                    contentDisposition.Name.Value,
-                    contentDisposition.FileName.Value,
-                    stream,
-                    contentDescriptor
-                ));
+                    files.Add(contentDisposition.Name.Value, new MultipartFile(
+                        contentDisposition.Name.Value,
+                        contentDisposition.FileName.Value,
+                        fileBufferingStream,
+                        contentDescriptor
+                    ));
+                }
+                catch
+                {
+                    fileBufferingStream?.Dispose();
+                    throw;
+                }
             }
             else if (!invalidFiles.Any())
             {

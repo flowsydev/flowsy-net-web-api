@@ -303,6 +303,58 @@ public class ExampleController : ControllerBase // Or MediationController
 }
 ```
 
+## Data Streaming
+### 1. Prepare File Buffering Options
+```csharp
+// Program.cs
+// using ...
+using Flowsy.Web.Api.Streaming;
+// using ...
+
+var builder = WebApplication.CreateBuilder(args);
+// Add services
+builder.Services.Configure<FileBufferingOptions>(options =>
+    {
+        // Configure options:
+        // MemoryThreshold
+        // BufferLimit
+        // TempFileDirectory
+        // TempFileDirectoryAccessor
+        // BytePool
+    });
+
+var app = builder.Build();
+// Use services
+app.Run();
+```
+### 2. Read or Write Streams Using a Streaming Provider
+```csharp
+// FileUploader.cs
+// using ...
+using Flowsy.Web.Api.Streaming;
+// using ...
+
+public class FileUploader
+{
+    private readonly IStreamingProvider _streamingProvider;
+    
+    public FileUploader(IStreamingProvider streamingProvider)
+    {
+        _streamingProvider = streamingProvider;
+    }
+    
+    public void UploadLargeFile(Stream inputStream)
+    {
+        using var bufferingStream = _streamingProvider.CreateFileBufferingReadStream(inputStream);
+        // Read content using bufferingStream 
+        // Make decisions based on the content
+        bufferingStream.Seek(0, SeekOrigin.Begin); // Rewind
+        // Read content again and store it somewhere
+    }
+}
+
+```
+
 ## Security Extensions
 ```csharp
 using System.Threading;
