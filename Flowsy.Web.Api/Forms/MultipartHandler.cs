@@ -85,7 +85,7 @@ public class MultipartHandler : IMultipartHandler
                     else
                         stream = _streamingProvider.CreateFileBufferingReadStream(section.Body);
 
-                    var contentDescriptor = _contentInspector?.Inspect(stream);
+                    var contentDescriptor = _contentInspector?.Inspect(stream, Path.GetExtension(contentDisposition.FileName.Value));
                     if (contentDescriptor is not null)
                     {
                         contentDescriptor.Name = contentDisposition.FileName.Value;
