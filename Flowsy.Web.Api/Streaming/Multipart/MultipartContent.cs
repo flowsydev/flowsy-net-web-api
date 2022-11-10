@@ -2,7 +2,7 @@ using System.Text.Json;
 using Flowsy.Localization;
 using Microsoft.Extensions.Primitives;
 
-namespace Flowsy.Web.Api.Forms;
+namespace Flowsy.Web.Api.Streaming.Multipart;
 
 /// <summary>
 /// Represents the multipart content read from a HTTP request.

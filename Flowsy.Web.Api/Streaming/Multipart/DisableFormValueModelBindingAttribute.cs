@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Flowsy.Web.Api.Forms;
+namespace Flowsy.Web.Api.Streaming.Multipart;
 
 /// <summary>
 /// Disables form value model binding.

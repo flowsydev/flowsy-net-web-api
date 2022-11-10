@@ -1,29 +1,29 @@
 using System.Text;
 using Flowsy.Content;
 using Flowsy.Localization;
-using Flowsy.Web.Api.Streaming;
+using Flowsy.Web.Api.Streaming.Buffering;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
 
-namespace Flowsy.Web.Api.Forms;
+namespace Flowsy.Web.Api.Streaming.Multipart;
 
 /// <summary>
 /// Handles multipart requests.
 /// </summary>
 public class MultipartHandler : IMultipartHandler
 {
-    private readonly IStreamingProvider? _streamingProvider;
+    private readonly IBufferingProvider? _bufferingProvider;
     private readonly IContentInspector? _contentInspector;
     private readonly IEnumerable<string> _allowedMimeTypes;
 
     public MultipartHandler(
-        IStreamingProvider? streamingProvider,
+        IBufferingProvider? bufferingProvider,
         IContentInspector? contentInspector,
         IEnumerable<string>? allowedMimeTypes
         )
     {
-        _streamingProvider = streamingProvider;
+        _bufferingProvider = bufferingProvider;
         _contentInspector = contentInspector;
         _allowedMimeTypes = allowedMimeTypes ?? Array.Empty<string>();
     }
@@ -76,14 +76,14 @@ public class MultipartHandler : IMultipartHandler
                 Stream? stream = null;
                 try
                 {
-                    if (_streamingProvider is null)
+                    if (_bufferingProvider is null)
                     {
                         stream = new MemoryStream();
                         await section.Body.CopyToAsync(stream, cancellationToken);
                         stream.Seek(0, SeekOrigin.Begin);
                     }
                     else
-                        stream = _streamingProvider.CreateFileBufferingReadStream(section.Body);
+                        stream = _bufferingProvider.CreateFileBufferingReadStream(section.Body);
 
                     var contentDescriptor = _contentInspector?.Inspect(stream, Path.GetExtension(contentDisposition.FileName.Value));
                     if (contentDescriptor is not null)

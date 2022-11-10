@@ -2,13 +2,13 @@ using System.Buffers;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 
-namespace Flowsy.Web.Api.Streaming;
+namespace Flowsy.Web.Api.Streaming.Buffering;
 
-public class StreamingProvider : IStreamingProvider
+public class BufferingProvider : IBufferingProvider
 {
     private readonly FileBufferingOptions? _fileBufferingOptions;
 
-    public StreamingProvider(IOptions<FileBufferingOptions>? fileBufferingOptions)
+    public BufferingProvider(IOptions<FileBufferingOptions>? fileBufferingOptions)
     {
         _fileBufferingOptions = fileBufferingOptions?.Value;
     }

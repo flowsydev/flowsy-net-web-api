@@ -1,6 +1,6 @@
 using System.Buffers;
 
-namespace Flowsy.Web.Api.Streaming;
+namespace Flowsy.Web.Api.Streaming.Buffering;
 
 /// <summary>
 /// File buffering options.

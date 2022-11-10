@@ -1,7 +1,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Http;
 
-namespace Flowsy.Web.Api.Forms;
+namespace Flowsy.Web.Api.Streaming.Multipart;
 
 /// <summary>
 /// Handles multipart requests.

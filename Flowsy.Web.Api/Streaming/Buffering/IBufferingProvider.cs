@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace Flowsy.Web.Api.Streaming;
+namespace Flowsy.Web.Api.Streaming.Buffering;
 
 /// <summary>
-/// Provides data streaming functionality.
+/// Provides data buffering functionality.
 /// </summary>
-public interface IStreamingProvider
+public interface IBufferingProvider
 {
     /// <summary>
     /// Creates a Stream that wraps another stream and enables rewinding by buffering the content as it is read.
