@@ -150,11 +150,18 @@ public class MediationController : ControllerBase
         CancellationToken cancellationToken
         ) where TRequest : Request<TResult>
     {
-        var validationResult = await TryValidateAsync(request, cancellationToken);
-        if (validationResult is null || validationResult.IsValid)
-            return Ok(await Mediator.Send(request, cancellationToken));
-        
-        return ValidationProblem(validationResult);
+        try
+        {
+            var validationResult = await TryValidateAsync(request, cancellationToken);
+            if (validationResult is null || validationResult.IsValid)
+                return Ok(await Mediator.Send(request, cancellationToken));
+
+            return ValidationProblem(validationResult);
+        }
+        catch (ValidationException exception)
+        {
+            return ValidationProblem(exception);
+        }
     }
 
     /// <summary>
