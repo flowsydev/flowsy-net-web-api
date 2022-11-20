@@ -11,7 +11,7 @@
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/flowsydev/flowsy-net-web-api</RepositoryUrl>
 
-        <PackageVersion>7.0.0</PackageVersion>
+        <PackageVersion>7.0.1</PackageVersion>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>
 
@@ -27,8 +27,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Flowsy.Content" Version="3.0.4" />
-        <PackageReference Include="Flowsy.Core" Version="1.1.5" />
+        <PackageReference Include="Flowsy.Content" Version="3.0.5" />
+        <PackageReference Include="Flowsy.Core" Version="1.1.6" />
         <PackageReference Include="Flowsy.Localization" Version="2.0.1" />
         <PackageReference Include="Flowsy.Mediation" Version="3.0.1" />
         <PackageReference Include="FluentValidation.AspNetCore" Version="11.2.2" />
@@ -37,7 +37,7 @@
         <PackageReference Include="MimeTypesMap" Version="1.0.8" />
         <PackageReference Include="Serilog.AspNetCore" Version="6.0.1" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="7.0.5" />
+        <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="7.0.6" />
         <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.4.0" />
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.4.0" />
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.4.0" />
