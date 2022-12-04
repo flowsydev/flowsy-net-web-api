@@ -103,7 +103,7 @@ public class MultipartHandler : IMultipartHandler
                         if (_allowedMimeTypes.Any())
                         {
                             var intersection = contentDescriptor.MimeTypes.Intersect(_allowedMimeTypes);
-                            if (intersection.Count() != contentDescriptor.MimeTypes.Count())
+                            if (!intersection.Any())
                             {
                                 invalidFiles.Add(contentDisposition.FileName.Value);
                                 stream.Dispose();
