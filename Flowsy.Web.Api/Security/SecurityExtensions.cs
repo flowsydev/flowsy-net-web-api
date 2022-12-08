@@ -24,17 +24,18 @@ public static class SecurityExtensions
                 httpContext.Request.Headers.SingleOrDefault(
                     h => ExtendedHeaderNames.ApiKeyRegex.IsMatch(h.Key)
                     );
+            var headerName = header?.Key;
+            var headerValues = header?.Value;
 
-            if (header is null)
+            if (headerName is null || headerValues is null || !headerValues.Value.Any())
             {
                 clientId = null;
                 apiKey = null;
                 return;
             }
 
-            var (key, values) = header.Value;
-            clientId = ExtendedHeaderNames.ApiKeyRegex.Match(key).Groups[1].Value;
-            apiKey = values.FirstOrDefault();
+            clientId = ExtendedHeaderNames.ApiKeyRegex.Match(headerName).Groups[1].Value;
+            apiKey = headerValues.Value.FirstOrDefault();
         }
         catch
         {
