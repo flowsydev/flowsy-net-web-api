@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Flowsy.Localization;
 using Microsoft.Extensions.Primitives;
 
@@ -48,7 +49,11 @@ public class MultipartContent : IDisposable, IAsyncDisposable
             ? JsonSerializer.Deserialize<T>(json, new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                PropertyNameCaseInsensitive = true
+                PropertyNameCaseInsensitive = true,
+                Converters =
+                {
+                    new JsonStringEnumConverter()
+                }
             })
             : default;
     }
