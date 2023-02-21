@@ -1,6 +1,7 @@
 using Flowsy.Web.Api.Parameters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
+using Serilog;
 
 namespace Flowsy.Web.Api.Security;
 
@@ -9,6 +10,9 @@ namespace Flowsy.Web.Api.Security;
 /// </summary>
 public static class SecurityExtensions
 {
+    private static ILogger? _logger;
+    private static ILogger Logger => _logger ??= Log.ForContext(typeof(SecurityExtensions));
+    
     /// <summary>
     /// Obtains the client identifier and its API Key from the request header named X-{ClientId}-ApiKey.
     /// The request must contain only one API Key header.
@@ -37,8 +41,9 @@ public static class SecurityExtensions
             clientId = ExtendedHeaderNames.ApiKeyRegex.Match(headerName).Groups[1].Value;
             apiKey = headerValues.Value.FirstOrDefault();
         }
-        catch
+        catch (Exception exception)
         {
+            Logger.Error(exception, "Error reading API Key from HTTP Context");
             clientId = null;
             apiKey = null;
         }
@@ -70,8 +75,9 @@ public static class SecurityExtensions
                 ? headerValue 
                 : headerValue.Split($"{valuePrefix} ")[1];
         }
-        catch
+        catch (Exception exception)
         {
+            Logger.Error(exception, "Error reading header {HeaderName} from HTTP Context", header);
             return null;
         }
     }
