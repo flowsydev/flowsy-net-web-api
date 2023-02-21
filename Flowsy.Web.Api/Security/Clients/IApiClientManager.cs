@@ -1,4 +1,4 @@
-namespace Flowsy.Web.Api.Security;
+namespace Flowsy.Web.Api.Security.Clients;
 
 public interface IApiClientManager
 {

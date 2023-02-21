@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
-namespace Flowsy.Web.Api.Security;
+namespace Flowsy.Web.Api.Security.Clients;
 
 /// <summary>
 /// Protects a controller or a specific controller method so it can be invoked only by clients with a valid API Key.

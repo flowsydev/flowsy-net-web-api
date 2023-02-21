@@ -1,5 +1,6 @@
 using Flowsy.Web.Api.Parameters;
 using Flowsy.Web.Api.Security;
+using Flowsy.Web.Api.Security.Clients;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;

@@ -1,7 +1,7 @@
 using System.Security.Authentication;
 using Flowsy.Localization;
 
-namespace Flowsy.Web.Api.Security;
+namespace Flowsy.Web.Api.Security.Clients;
 
 public class InMemoryApiClientManager : IApiClientManager
 {

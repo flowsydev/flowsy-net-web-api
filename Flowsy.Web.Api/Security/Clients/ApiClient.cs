@@ -1,6 +1,6 @@
 using System.Security.Claims;
 
-namespace Flowsy.Web.Api.Security;
+namespace Flowsy.Web.Api.Security.Clients;
 
 /// <summary>
 /// Represents an external application or service that consumes the API. 
