@@ -11,7 +11,7 @@
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/flowsydev/flowsy-net-web-api</RepositoryUrl>
 
-        <PackageVersion>9.0.0</PackageVersion>
+        <PackageVersion>9.1.0</PackageVersion>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>
 
@@ -30,7 +30,7 @@
         <PackageReference Include="Flowsy.Content" Version="3.2.0" />
         <PackageReference Include="Flowsy.Core" Version="1.1.6" />
         <PackageReference Include="Flowsy.Localization" Version="2.0.1" />
-        <PackageReference Include="Flowsy.Mediation" Version="5.0.0" />
+        <PackageReference Include="Flowsy.Mediation" Version="5.1.0" />
         <PackageReference Include="FluentValidation.AspNetCore" Version="11.2.2" />
         <PackageReference Include="Hashids.net" Version="1.6.1" />
         <PackageReference Include="Hellang.Middleware.ProblemDetails" Version="6.5.1" />
