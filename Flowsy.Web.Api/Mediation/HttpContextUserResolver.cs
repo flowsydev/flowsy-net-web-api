@@ -1,18 +1,29 @@
 using System.Security.Claims;
 using Flowsy.Mediation;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 
 namespace Flowsy.Web.Api.Mediation;
 
 public class HttpContextUserResolver : IRequestUserResolver
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public HttpContextUserResolver(IHttpContextAccessor httpContextAccessor)
+    private readonly ClaimsPrincipal? _userMockup;
+    
+    public HttpContextUserResolver(IHttpContextAccessor httpContextAccessor, ClaimsPrincipal? userMockup)
     {
-        _httpContextAccessor = httpContextAccessor;
+        HttpContextAccessor = httpContextAccessor;
+        _userMockup = userMockup;
     }
-
-    public Task<ClaimsPrincipal?> GetUserAsync()
-        => Task.FromResult(_httpContextAccessor.HttpContext?.User);
+    
+    protected IHttpContextAccessor HttpContextAccessor { get; }
+    
+    public virtual Task<ClaimsPrincipal?> GetUserAsync<TRequest, TResult>(
+        TRequest request,
+        CancellationToken cancellationToken
+        )
+        where TRequest : Request<TResult>, IRequest<TResult>
+        => Task.Run(
+            () => HttpContextAccessor.HttpContext?.User ?? _userMockup,
+            cancellationToken
+            );
 }
