@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,7 +46,7 @@ public static class ExceptionExtensions
     }
 
     /// <summary>
-    /// Obtains a ProblemDetails instance from the given exception.
+    /// Obtains a ValidationProblemDetails instance from the given exception.
     /// </summary>
     /// <param name="exception">The exception.</param>
     /// <param name="errors">The validation errors.</param>
@@ -80,5 +81,35 @@ public static class ExceptionExtensions
             problemDetails.Extensions.Add(key, value);
 
         return problemDetails;
+    }
+
+    /// <summary>
+    /// Obtains a ValidationProblemDetails instance from the given exception.
+    /// </summary>
+    /// <param name="exception">The exception.</param>
+    /// <param name="type">A URI reference [RFC3986] that identifies the problem type</param>
+    /// <param name="detail">The exception detail.</param>
+    /// <param name="extensions">Additional properties containing exception details.</param>
+    /// <returns>An instance of ValidationProblemDetails</returns>
+    public static ValidationProblemDetails Map(
+        this ValidationException exception,
+        string? type = null,
+        string? detail = null,
+        IDictionary<string, object?>? extensions = null
+        )
+    {
+        var errors = (
+            from e in exception.Errors
+            group e by e.PropertyName
+            into errorGroup
+            orderby errorGroup.Key
+            select new
+            {
+                Property = errorGroup.Key,
+                Messages = errorGroup.Select(e => e.ErrorMessage)
+            }
+        ).ToDictionary(e => e.Property, e => e.Messages.ToArray());
+
+        return exception.Map(errors, type, detail, extensions);
     }
 }
