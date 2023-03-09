@@ -7,7 +7,7 @@ This package gathers and extends the tools needed to create solid Web APIs by co
 * API Versioning
 * API Key Security
 * Routing Naming Convenion
-* Data Validation
+* Request Validation
 * Mediator Pattern for Controllers
 * Data Streaming
 * Logging
@@ -236,12 +236,13 @@ public class CustomerController : MediationController
     }
     
     // With automatic validation if an instance of IValidator<UpdateCustomerCommand> is registered
-    // The mediation result is and instance of the expected UpdateCustomerCommandResult class 
+    // The mediation result is and instance of the expected UpdateCustomerCommandResult class
+    // You must call AddRequestValidation on MediationBuilder when adding mediation to the application services. 
     [HttpPut("{customerId:int}")]
     public async Task<IActionResult> UpdateAsync(int customerId, [FromBody] UpdateCustomerCommand command, CancellationToken cancellationToken)
     {
         command.CustomerId = customerId; // Ensure the command is using the right customer ID
-        var commandResult = await MediateAsync<UpdateCustomerCommand, UpdateCustomerCommandResult>(command, cancellationToken);
+        var commandResult = await Mediator.Send(command, cancellationToken);
         return Ok(commandResult);
     }
     
@@ -251,7 +252,7 @@ public class CustomerController : MediationController
     public Task<IActionResult> DeleteAsync(int customerId, [FromBody] DeleteCustomerCommand command, CancellationToken cancellationToken)
     {
         command.CustomerId = customerId; // Ensure the command is using the right customer ID
-        return MediateActionResultAsync<DeleteCustomerCommand, DeleteCustomerCommandResult>(command, cancellationToken);
+        return MediateAsync<DeleteCustomerCommand, DeleteCustomerCommandResult>(command, cancellationToken);
     }
 }
 ```

@@ -3,6 +3,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using FluentValidation.Results;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,7 +12,7 @@ namespace Flowsy.Web.Api.Mediation;
 /// <summary>
 /// Provides validation and mediation functionallity for API controllers.
 /// </summary>
-public class MediationController : ControllerBase
+public abstract class MediationController : ControllerBase
 {
     /// <summary>
     /// An instance of IMediator to send requests or notifications.
@@ -101,41 +102,27 @@ public class MediationController : ControllerBase
     /// <param name="request">The request to be processed.</param>
     /// <param name="cancellationToken">The cancellation token for the operation.</param>
     /// <typeparam name="TRequest">The type of request.</typeparam>
-    protected virtual Task MediateAsync<TRequest>(
+    /// <returns>An instance of OkObjectResult with a 200 status code or BadRequestObjectResult with a 400 status code if a validation exception is thrown.</returns>
+    protected virtual Task<IActionResult> MediateAsync<TRequest>(
         TRequest request,
         CancellationToken cancellationToken
-        ) where TRequest : Request
-        => MediateAsync<TRequest, Unit>(request, cancellationToken);
-
-    /// <summary>
-    /// Sends a request to be processed with some expected result.
-    /// </summary>
-    /// <param name="request">The request to be processed.</param>
-    /// <param name="cancellationToken">The cancellation token for the operation.</param>
-    /// <typeparam name="TRequest">The type of request.</typeparam>
-    /// <typeparam name="TResult">The type of result.</typeparam>
-    /// <returns>The expected result.</returns>
-    protected virtual async Task<TResult> MediateAsync<TRequest, TResult>(
-        TRequest request,
-        CancellationToken cancellationToken
-        ) where TRequest : Request<TResult>
-    {
-        await TryValidateAndThrowAsync(request, cancellationToken);
-        return await Mediator.Send(request, cancellationToken);
-    }
+        ) where TRequest : Request<Unit>
+        => MediateAsync(request, StatusCodes.Status200OK, cancellationToken);
 
     /// <summary>
     /// Sends a request to be processed with no result expected.
     /// </summary>
     /// <param name="request">The request to be processed.</param>
+    /// <param name="statusCode">The status code for the response.</param>
     /// <param name="cancellationToken">The cancellation token for the operation.</param>
     /// <typeparam name="TRequest">The type of request.</typeparam>
-    /// <returns>An instance of OkObjectResult for a 200 status code, BadRequestObjectResult for a 400 status code or ObjectResult for other status codes.</returns>
-    protected virtual Task<IActionResult> MediateActionResultAsync<TRequest>(
+    /// <returns>An instance of ObjectResult with the specified status code or BadRequestObjectResult with a 400 status code if a validation exception is thrown.</returns>
+    protected virtual Task<IActionResult> MediateAsync<TRequest>(
         TRequest request,
+        int statusCode,
         CancellationToken cancellationToken
         ) where TRequest : Request<Unit>
-        => MediateActionResultAsync<TRequest, Unit>(request, cancellationToken);
+        => MediateAsync<TRequest, Unit>(request, statusCode, cancellationToken);
 
     /// <summary>
     /// Sends a request to be processed with some expected result.
@@ -144,19 +131,31 @@ public class MediationController : ControllerBase
     /// <param name="cancellationToken">The cancellation token for the operation.</param>
     /// <typeparam name="TRequest">The type of request.</typeparam>
     /// <typeparam name="TResult">The type of result.</typeparam>
-    /// <returns>An instance of OkObjectResult for a 200 status code, BadRequestObjectResult for a 400 status code or ObjectResult for other status codes.</returns>
-    protected virtual async Task<IActionResult> MediateActionResultAsync<TRequest, TResult>(
+    /// <returns>An instance of OkObjectResult with a 200 status code or BadRequestObjectResult with a 400 status code if a validation exception is thrown.</returns>
+    protected virtual Task<IActionResult> MediateAsync<TRequest, TResult>(
         TRequest request,
+        CancellationToken cancellationToken
+        ) where TRequest : Request<TResult>
+        => MediateAsync<TRequest, TResult>(request, StatusCodes.Status200OK, cancellationToken);
+
+    /// <summary>
+    /// Sends a request to be processed with some expected result.
+    /// </summary>
+    /// <param name="request">The request to be processed.</param>
+    /// <param name="statusCode">The status code for the response.</param>
+    /// <param name="cancellationToken">The cancellation token for the operation.</param>
+    /// <typeparam name="TRequest">The type of request.</typeparam>
+    /// <typeparam name="TResult">The type of result.</typeparam>
+    /// <returns>An instance of ObjectResult with the specified status code or BadRequestObjectResult with a 400 status code if a validation exception is thrown.</returns>
+    protected virtual async Task<IActionResult> MediateAsync<TRequest, TResult>(
+        TRequest request,
+        int statusCode,
         CancellationToken cancellationToken
         ) where TRequest : Request<TResult>
     {
         try
         {
-            var validationResult = await TryValidateAsync(request, cancellationToken);
-            if (validationResult is null || validationResult.IsValid)
-                return Ok(await Mediator.Send(request, cancellationToken));
-
-            return ValidationProblem(validationResult);
+            return StatusCode(statusCode, await Mediator.Send(request, cancellationToken));
         }
         catch (ValidationException exception)
         {
