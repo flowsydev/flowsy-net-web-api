@@ -23,7 +23,11 @@ public class HttpContextUserResolver : IRequestUserResolver
         )
         where TRequest : Request<TResult>, IRequest<TResult>
         => Task.Run(
-            () => HttpContextAccessor.HttpContext?.User ?? _userMockup,
+            () =>
+            {
+                var user = HttpContextAccessor.HttpContext?.User;
+                return user is not null && user.Claims.Any() ? user : _userMockup;
+            },
             cancellationToken
             );
 }

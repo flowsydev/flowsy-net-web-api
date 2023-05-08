@@ -11,7 +11,7 @@
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/flowsydev/flowsy-net-web-api</RepositoryUrl>
 
-        <PackageVersion>10.1.6</PackageVersion>
+        <PackageVersion>10.1.7</PackageVersion>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>
 
