@@ -19,7 +19,7 @@ public abstract class PersistentApiClientManager : IApiClientManager
         Cache.Save(clients.ToArray());
     }
 
-    public Task<ApiClient?> GetClientAsync(string clientId, CancellationToken cancellationToken)
+    public virtual Task<ApiClient?> GetClientAsync(string clientId, CancellationToken cancellationToken)
         => Task.Run(() => Cache.GetOne(clientId), cancellationToken);
 
     public virtual Task<IEnumerable<ApiClient>> GetClientsAsync(CancellationToken cancellationToken)
