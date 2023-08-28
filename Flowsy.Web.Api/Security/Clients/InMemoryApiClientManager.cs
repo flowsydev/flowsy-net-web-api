@@ -12,37 +12,51 @@ public class InMemoryApiClientManager : IApiClientManager
         _clients = clients.ToDictionary(apiKey => apiKey.ClientId);
     }
 
-    public IEnumerable<string> ClientIds => _clients.Keys;
+    public Task<ApiClient?> GetClientAsync(string clientId, CancellationToken cancellationToken)
+        => Task.Run(
+            () =>
+            {
+                if (_clients.All(e => string.Compare(e.Key, clientId, StringComparison.OrdinalIgnoreCase) != 0))
+                    return null;
+                
+                var entry = _clients.FirstOrDefault(e =>
+                    string.Compare(e.Key, clientId, StringComparison.OrdinalIgnoreCase) == 0);
 
-    public ApiClient Validate(string clientId, string apiKey)
-    {
-        var client =
-        (
-            from entry in _clients
-            where string.Compare(entry.Key, clientId, StringComparison.OrdinalIgnoreCase) == 0 &&
-                  entry.Value.ApiKey == apiKey
-            select entry.Value
-        ).FirstOrDefault();
+                return entry.Value;
+            },
+            cancellationToken
+            );
 
-        if (client is null)
-            throw new AuthenticationException("InvalidClientIdOrApiKey".Localize());
-
-        return client;
-    }
-
+    public Task<IEnumerable<ApiClient>> GetClientsAsync(CancellationToken cancellationToken)
+        => Task.Run<IEnumerable<ApiClient>>(() => _clients.Values, cancellationToken);
+    
     public Task<ApiClient> ValidateAsync(string clientId, string apiKey, CancellationToken cancellationToken)
-        => Task.Run(() => Validate(clientId, apiKey), cancellationToken);
+        => Task.Run(() =>
+            {
+                var client =
+                (
+                    from entry in _clients
+                    where string.Compare(entry.Key, clientId, StringComparison.OrdinalIgnoreCase) == 0 &&
+                          entry.Value.ApiKey == apiKey
+                    select entry.Value
+                ).FirstOrDefault();
 
-    public bool IsValid(string clientId)
-        => _clients.Any(entry => string.Compare(entry.Key, clientId, StringComparison.OrdinalIgnoreCase) == 0);
+                if (client is null)
+                    throw new AuthenticationException("InvalidClientIdOrApiKey".Localize());
+
+                return client;
+            },
+            cancellationToken
+            );
 
     public Task<bool> IsValidAsync(string clientId, string apiKey, CancellationToken cancellationToken)
-        => Task.Run(() => IsValid(clientId, apiKey), cancellationToken);
-
-    public bool IsValid(string clientId, string apiKey)
-        => _clients.Any(
-            entry =>
-                string.Compare(entry.Key, clientId, StringComparison.OrdinalIgnoreCase) == 0 &&
-                entry.Value.ApiKey == apiKey
-        );
+        => Task.Run(
+            () => 
+                _clients.Any(
+                    entry =>
+                        string.Compare(entry.Key, clientId, StringComparison.OrdinalIgnoreCase) == 0 &&
+                        entry.Value.ApiKey == apiKey
+                ),
+            cancellationToken
+            );
 }

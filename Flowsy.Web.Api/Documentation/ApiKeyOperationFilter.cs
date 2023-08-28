@@ -23,15 +23,18 @@ public class ApiKeyOperationFilter : IOperationFilter
     {
         if (_apiClientManager is null)
             return;
+
+        var task = _apiClientManager.GetClientsAsync(CancellationToken.None);
+        task.Wait();
         
-        foreach (var clientId in _apiClientManager.ClientIds)
+        foreach (var client in task.Result)
         {
             operation.Parameters.Add(new OpenApiParameter
             {
-                Name = ExtendedHeaderNames.ApiKey.Replace("{ClientId}", clientId),
+                Name = ExtendedHeaderNames.ApiKey.Replace("{ClientId}", client.ClientId),
                 In = ParameterLocation.Header,
                 Required = false
-            });   
+            });
         }
     }
 }
