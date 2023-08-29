@@ -8,21 +8,21 @@ public class ApiClientCache
     private readonly IDictionary<string, ApiClient> _clients = new Dictionary<string, ApiClient>();
     private TimeSpan _lifetime;
     private Timer? _timer;
-    public event EventHandler Cleared;
+    public event EventHandler? Cleared;
 
     public ApiClientCache() : this(TimeSpan.Zero)
     {
     }
 
+    public ApiClientCache(TimeSpan lifetime)
+    {
+        Lifetime = lifetime;
+    }
+    
     private void OnTimerElapsed(object? sender, ElapsedEventArgs args)
     {
         Clear();
         Cleared?.Invoke(this, EventArgs.Empty);
-    }
-
-    public ApiClientCache(TimeSpan lifetime)
-    {
-        Lifetime = lifetime;
     }
 
     public void Save(params ApiClient[] clients)
