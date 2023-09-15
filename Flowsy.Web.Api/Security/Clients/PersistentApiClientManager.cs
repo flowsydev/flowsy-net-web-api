@@ -6,22 +6,22 @@ namespace Flowsy.Web.Api.Security.Clients;
 
 public abstract class PersistentApiClientManager : IApiClientManager
 {
-    private readonly bool _encodedApiKey;
-    
-    protected PersistentApiClientManager() : this(TimeSpan.Zero, true)
+    protected PersistentApiClientManager() : this(TimeSpan.Zero)
     {
     }
 
-    protected PersistentApiClientManager(TimeSpan cacheLifetime, bool encodedApiKey)
+    protected PersistentApiClientManager(TimeSpan cacheLifetime, bool encodedApiKey = true)
     {
         Cache = new ApiClientCache(cacheLifetime);
-        _encodedApiKey = encodedApiKey;
+        EncodedApiKey = encodedApiKey;
     }
 
-    protected PersistentApiClientManager(IEnumerable<ApiClient> clients, TimeSpan cacheLifetime, bool encodedApiKey) : this(cacheLifetime, encodedApiKey)
+    protected PersistentApiClientManager(IEnumerable<ApiClient> clients, TimeSpan cacheLifetime, bool encodedApiKey = true) : this(cacheLifetime, encodedApiKey)
     {
         Cache.Save(clients.ToArray());
     }
+    
+    public bool EncodedApiKey { get; protected set; }
 
     protected virtual string DecodeApiKey(string encodedApiKey)
     {
@@ -38,9 +38,7 @@ public abstract class PersistentApiClientManager : IApiClientManager
     public virtual async Task<ApiClient> ValidateAsync(string clientId, string apiKey, CancellationToken cancellationToken)
     {
         var client = await GetClientAsync(clientId, cancellationToken);
-        var decodedApiKey = _encodedApiKey ? DecodeApiKey(apiKey) : apiKey;
-        
-        if (client is null || client.ApiKey != decodedApiKey)
+        if (client is null || client.ApiKey != apiKey)
             throw new AuthenticationException("InvalidClientIdOrApiKey".Localize());
 
         return client;
