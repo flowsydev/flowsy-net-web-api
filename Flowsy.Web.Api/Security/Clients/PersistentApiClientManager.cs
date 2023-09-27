@@ -38,9 +38,15 @@ public abstract class PersistentApiClientManager : IApiClientManager
     public virtual async Task<ApiClient> ValidateAsync(string clientId, string apiKey, CancellationToken cancellationToken)
     {
         var client = await GetClientAsync(clientId, cancellationToken);
-        if (client is null || client.ApiKey != apiKey)
-            throw new AuthenticationException("InvalidClientIdOrApiKey".Localize());
+        var errorMessage = "InvalidClientIdOrApiKey".Localize();
+        
+        if (client is null)
+            throw new AuthenticationException(errorMessage);
 
+        var validApiKey = EncodedApiKey ? DecodeApiKey(client.ApiKey) : client.ApiKey;
+        if (apiKey != validApiKey)
+            throw new AuthenticationException(errorMessage);
+        
         return client;
     }
 
