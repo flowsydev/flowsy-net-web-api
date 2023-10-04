@@ -30,14 +30,14 @@
         <PackageReference Include="Flowsy.Content" Version="3.2.3" />
         <PackageReference Include="Flowsy.Core" Version="2.0.0" />
         <PackageReference Include="Flowsy.Localization" Version="2.0.1" />
-        <PackageReference Include="Flowsy.Mediation" Version="7.2.0" />
+        <PackageReference Include="Flowsy.Mediation" Version="7.2.1" />
         <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
         <PackageReference Include="Hellang.Middleware.ProblemDetails" Version="6.5.1" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
         <PackageReference Include="MimeTypesMap" Version="1.0.8" />
         <PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="7.0.6" />
+        <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="7.0.11" />
         <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.5.0" />
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.5.0" />
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.5.0" />
