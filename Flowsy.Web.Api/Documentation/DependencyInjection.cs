@@ -22,18 +22,20 @@ public static class DependencyInjection
         this WebApplicationBuilder builder,
         params Assembly[] exampleAssemblies
         )
-        => builder.AddDocumentation(null, exampleAssemblies);
+        => builder.AddDocumentation(null, true, exampleAssemblies);
 
     /// <summary>
     /// Adds Swagger to the application builder. 
     /// </summary>
     /// <param name="builder">The application builder</param>
     /// <param name="setupAction">An action to configure a SwaggerGenOptions instance.</param>
+    /// <param name="includeApiKeyOperationFilter">Indicates whether or not to add an operation filter of type ApiKeyOperationFilter.</param>
     /// <param name="exampleAssemblies">The list of assemblies containing request examples.</param>
     /// <returns>The application builder.</returns>
     public static WebApplicationBuilder AddDocumentation(
         this WebApplicationBuilder builder,
         Action<SwaggerGenOptions>? setupAction = null,
+        bool includeApiKeyOperationFilter = true,
         params Assembly[] exampleAssemblies
         )
     {
@@ -47,7 +49,8 @@ public static class DependencyInjection
             options.OperationFilter<AcceptLanguageOperationFilter>();
             options.OperationFilter<ApiVersionOperationFilter>();
 
-            options.OperationFilter<ApiKeyOperationFilter>();
+            if (includeApiKeyOperationFilter)
+                options.OperationFilter<ApiKeyOperationFilter>();
 
             options.ExampleFilters();
             
